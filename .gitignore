@@ -1,20 +1,5 @@
 # Python __pycache__, .pyc, virtualenv
 __pycache__/
-*.py[cod]
-*.egg
-*.egg-info/
-dist/
-build/
-env/
 venv/
 
-# VS Code config
-.vscode/
-
-# OS fayllari
-.DS_Store
-Thumbs.db
-
-# Loglar
-*.log
 .idea
