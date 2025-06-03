@@ -50,7 +50,7 @@ async def main():
     initialize_database()  # Faqat bir marta ishlatiladi
 
     # Webhook sozlamalari
-    WEBHOOK_HOST = os.getenv("WEBHOOK_HOST","https://fff9-94-158-58-31.ngrok-free.app")  # Railway domeningiz
+    WEBHOOK_HOST = os.getenv("WEBHOOK_HOST","YOUR_DOMEN")  # Railway domeningiz
     WEBHOOK_PATH = "/webhook"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = "0.0.0.0"
