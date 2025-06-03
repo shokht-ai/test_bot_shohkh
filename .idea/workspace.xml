@@ -8,27 +8,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2249bc7d-02be-4fc9-a63a-28341191807a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/telegram_test_bot.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/generate_pro_keys.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/handlers/base_handler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/handlers/file_handler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/sending_file.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/start_poll.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/stats.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/update_file.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/uploading_file.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/view_subscription_price.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/.keep" beforeDir="false" afterPath="$PROJECT_DIR$/app/handlers/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/bot_instance.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/bot_instance.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/files.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
