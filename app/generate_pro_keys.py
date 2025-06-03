@@ -6,9 +6,13 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 
+from app.handlers.base_handler import start_command
 from database.pro_keys import create_pro_key, get_key_id_by_key, update_key_by_id, check_key_used_by_id, update_info_key
 from database.shared import execute_query
-from app.handlers.base_handler import start_command
+
+
+from dotenv import load_dotenv
+load_dotenv()
 
 pro_key_router = Router()
 
@@ -17,23 +21,13 @@ USER_ID = os.getenv("USERID","123456789")
 async def generate_unique_id(msg: Message):
     generate = uuid.uuid1()
     generate = str(generate)
-    create_pro_key(generate)
-    key_id = get_key_id_by_key(generate)[0][0]
+    await create_pro_key(generate)
+    key_id = await get_key_id_by_key(generate)[0]['id']
     generate = " ".join([generate[:14], generate[15:]]).replace(" ", str(key_id))
     generate = str(key_id) + ":".join(sample(generate, len(generate)))
-    update_key_by_id(generate, key_id)
+    await update_key_by_id(generate, key_id)
     await start_command(msg, f"Pro obuna uchun yangi kalit:\n<pre>{generate}</pre>")
 
-
-# Vaqtinchalik funksiya
-# Ma'lumotlarni ba'zadan o'chirish uchun
-async def restart_all(msg: Message):
-    execute_query("DELETE FROM questions;")
-    execute_query("DELETE FROM banks;")
-    execute_query("DELETE FROM users;")
-    execute_query("DELETE FROM files;")
-    execute_query("DELETE FROM pro_keys;")
-    await start_command(msg, "Barchasi o'chirildi.")
 
 
 # VAqtinchalik funksiya
@@ -41,8 +35,10 @@ async def restart_all(msg: Message):
 @pro_key_router.message(Command("start_users:"))
 async def restart_users(msg: Message):
     if msg.from_user.id == USER_ID:
-        user_id = str(msg.text.split(":")[1])
-        execute_query("UPDATE users SET usage_type = ordinary WHERE user_id = ?;", (user_id,))
+        user_id = int(msg.text.split(":")[1])
+        from database.users import update_user_type
+        await update_user_type(user_id, "ordinary")
+        # await execute_query("UPDATE users SET usage_type = ordinary WHERE user_id = ?;", (user_id,))
         await start_command(msg, f"<code>{user_id}</code>\nFoydalanuvchilarning tarifi yangilandi.")
     else:
         from app.handlers.file_handler import no_commands
@@ -54,35 +50,35 @@ async def update_capacity(msg: Message):
         from .handlers.file_handler import no_commands
         await no_commands(msg)
         return
-    from database1.banks import update_capacity_by_time
-    update_capacity_by_time()
+    from database.banks import update_capacity_by_time
+    await update_capacity_by_time()
 
 @pro_key_router.message(F.text.startswith == "/pro ")
 async def check_key_used(msg: Message):
     get_id_list = list(msg.text.split(" "))
 
     if not is_valid_key_format(get_id_list):
-        await start_command(msg, "Kalit mavjud emas.")
+        await start_command(msg, "Kalit mavjud emas")
         return
 
     get_id = get_id_list[1]
     key_id = get_key_id(get_id)
 
     if not key_id or not key_id.isdigit():
-        await start_command(msg, "Kalit mavjud emas.")
+        await start_command(msg, "Kalit mavjud emas‼️")
         return
 
     key_id_int = int(key_id)
-    used_bool = check_key_used_by_id(key_id_int)
+    used_bool = await check_key_used_by_id(key_id_int)
 
     if not used_bool:
         await start_command(msg, "Kalit mavjud emas.")
         return
 
-    if used_bool[0][0] == 1:
+    if used_bool[0]['used'] == 1:
         await start_command(msg, "Kalit allaqachon ishlatilib bo'lingan.")
         return
-    elif used_bool[0][0] == 0:
+    elif used_bool[0]['used'] == 0:
         await handle_user_subscription(msg, key_id_int)
 
     await start_command(msg, f"Tabriklaymiz obuna tarifingiz Pro ga ko'tarildi.")
@@ -102,14 +98,14 @@ def get_key_id(get_id):
 
 async def handle_user_subscription(msg: Message, key_id: int):
     """Foydalanuvchini obuna yangilash uchun yordamchi funksiyani bajaradi."""
-    from database1.users import update_user_type, get_user_by_id
+    from database.users import update_user_type, get_user_by_id
 
     user_id = msg.from_user.id
-    info_user = get_user_by_id(user_id)
+    info_user = await get_user_by_id(user_id)
 
     if not info_user:
         await msg.answer("Iltimos oldin test tuzmoqchi bo'lgan faylingizni tashab qo'ying")
         return
 
-    update_info_key(key_id)
-    update_user_type(user_id, "pro")
+    await update_info_key(key_id)
+    await update_user_type(user_id, "pro")

@@ -5,12 +5,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 from aiohttp import web
+from dotenv import load_dotenv
 
 from database import initialize_database
-from database.banks import update_capacity_by_time
+# from database.banks import update_capacity_by_time
 from core.bot_instance import bot as b
 from app import all_router
 
+load_dotenv()
 
 dp = Dispatcher(storage=MemoryStorage())
 
@@ -47,10 +49,11 @@ async def on_startup(bot: Bot, webhook_url: str):
 
 async def main():
     print("✅ Bot ishga tushdi...")
-    initialize_database()  # Faqat bir marta ishlatiladi
+    await initialize_database()  # Faqat bir marta ishlatiladi
 
     # Webhook sozlamalari
     WEBHOOK_HOST = os.getenv("WEBHOOK_HOST","YOUR_DOMEN")  # Railway domeningiz
+    print("webhook manizl:", WEBHOOK_HOST)
     WEBHOOK_PATH = "/webhook"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = "0.0.0.0"

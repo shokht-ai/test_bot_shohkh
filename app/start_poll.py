@@ -20,7 +20,7 @@ class TestState(StatesGroup):
 
 
 # ✅ Yordamchi funksiya: Tasodifiy savollarni olish
-async def fetch_random_questions(bank_id: int, limit: int = 15) -> list:
+async def fetch_random_questions(bank_id: int, limit: int = 15) -> list[dict]:
     """
     Berilgan bank_id bo‘yicha savollarni bazadan olib, maksimal 30 tasodifiy savolni tanlab qaytaradi.
 
@@ -28,31 +28,32 @@ async def fetch_random_questions(bank_id: int, limit: int = 15) -> list:
     :param limit:
     :return: savollar to'plami
     """
-    questions = get_questions_by_bank(bank_id)
-    if not questions:
+    # question, correct, wrong1, wrong2, wrong3
+    records = await get_questions_by_bank(bank_id)
+    if not records:
         return []
+    questions = [dict(q) for q in records]
     return sample(questions, min(limit, len(questions)))
 
 
 # ✅ Yordamchi funksiya: Poll uchun ma'lumot tayyorlash
-def prepare_poll_data(question: tuple) -> tuple:
+def prepare_poll_data(question: dict) -> tuple:
     """
-    Bitta savolni (tuple formatida) oladi va:
-        Savol matnini (question_text)
-
-        Tasodifiy tartibda javob variantlari
-
-        To‘g‘ri javobning yangi indeksini tayyorlab beradi.
-
-    :param question:
-    :return: quiz test tuzish uchun ma'lumotlar
+    Bitta savolni dict formatida oladi va:
+        - Savol matni (question_text)
+        - Tasodifiy tartibda javob variantlari
+        - To‘g‘ri javobning yangi indeksini qaytaradi
     """
-
-    correct_answer = question[1]
-    options = [question[1], question[2], question[3], question[4]]
+    correct_answer = question["correct"]
+    options = [
+        question["correct"],
+        question["wrong1"],
+        question["wrong2"],
+        question["wrong3"]
+    ]
     randomized_options = sample(options, 4)
     correct_index = randomized_options.index(correct_answer)
-    return question[0], randomized_options, correct_index
+    return question["question"], randomized_options, correct_index
 
 
 # ✅ Yordamchi funksiya: Test holatini boshlang'ichga sozlash
@@ -210,6 +211,7 @@ async def start_poll_test(callback: CallbackQuery, state: FSMContext):
 
     bank_id = int(parts[1])
     questions = await fetch_random_questions(bank_id)
+    print("start_poll:214  questions dan qatgan qiymatlar\n",questions)
 
     if not questions:
         await callback.message.answer("❌ Bu bankda savollar yo‘q.")

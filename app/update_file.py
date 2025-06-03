@@ -18,22 +18,22 @@ async def sort_message(msg: Message, file_path):
     if await check_count_questions_in_excel(msg, file_path):
         return
 
-    bank_id = get_bank_id_by_file_id(file_id)
+    bank_id = await get_bank_id_by_file_id(file_id)
 
     if bank_id is None:
         os.remove(file_path)
         await start_command(msg, "⚠️ Bunday ID bilan fayl topilmadi.")
         return
     else:
-        bank_id = bank_id[0][0]
-        os.remove(get_file_path_by_file_id(bank_id)[0][0])
+        bank_id = bank_id[0]['bank_id']
+        os.remove((await get_file_path_by_file_id(bank_id))[0]['file_name'])
 
-    update_title_and_created_time_by_bank_id(file_name, created_date, bank_id)
-    update_file_name(file_id, file_path)
-    delete_questions_by_bank_id_bulk(bank_id)
+    await update_title_and_created_time_by_bank_id(file_name, created_date, bank_id)
+    await update_file_name(file_id, file_path)
+    await delete_questions_by_bank_id_bulk(bank_id)
 
-    questions = extract_questions_from_excel(file_path)
-    insert_questions_bulk(bank_id, questions)
-    update_file_by_bank(bank_id)
+    questions = await extract_questions_from_excel(file_path)
+    await insert_questions_bulk(bank_id, questions)
+    await update_file_by_bank(bank_id)
     await start_command(msg, "✅ Fayl bazaga muvaffaqiyatli yangilandi.")
     # file_id borligni tekshirish yo'q bo'lsa fileni downloadsdan o'chirish.

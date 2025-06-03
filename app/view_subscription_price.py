@@ -6,23 +6,25 @@ from database.users import get_user_by_id
 from database.banks import get_info_for_view_subs, get_amount_by_user
 from database.users import create_user_if_not_exists
 from database.files import get_file_id_by_bank_id
-from .handlers.base_handler import start_command
+from app.handlers.base_handler import start_command
 
 subscripition_router =Router()
 
 async def view_test_base_info(msg: Message, user_id, info):
-    amount_base = get_amount_by_user(user_id)[0][0]
-    usage_type = get_user_by_id(user_id)[0][0]
+    amount_base = (await get_amount_by_user(user_id))[0]["count"]
+    print("view_subs:15 \n",amount_base)
+    usage_type = (await get_user_by_id(user_id))[0]["usage_type"]
     respond_text = f"🌟 Sizning test bazangizda hozirda <b>{amount_base}</b> ta test mavjud! 🎉\n\n"
 
     if amount_base == 0:
         respond_text += "Afsuski, hozirda test bazangizda hech qanday test mavjud emas. 😕 Yangi testlar yaratishni boshlash uchun vaqt toping! ⏳\n"
     else:
         respond_text += "Mana, sizda mavjud bo'lgan testlar: 📚\n\n"
-        for title, capacity, bank_id in info:
+        for items in info:
+            title, bank_id, capacity = items["title"], items["bank_id"], items["capacity"]
             if usage_type == "founder":
                 capacity = -1
-            file_id = get_file_id_by_bank_id(bank_id)[0][0]
+            file_id = (await get_file_id_by_bank_id(bank_id))[0]["file_id"]
             respond_text += (
                 f"🔹 <b>{title}</b> (Fayl ID: <code>{file_id}</code>)\n"
                 f"    🌱 Faylni <b>{capacity}</b> marta yangilay olasiz. 🔄\n\n"
@@ -45,9 +47,10 @@ async def view_subscription(msg: Message):
     chat_id = msg.chat.id
     username = msg.from_user.username
     user_first_name = msg.from_user.first_name
-    create_user_if_not_exists(user_id=user_id, chat_id=chat_id, username=username)
-    usage_type = get_user_by_id(user_id)[0][0]
-    info = get_info_for_view_subs(user_id)
+    await create_user_if_not_exists(user_id=user_id, chat_id=chat_id, username=username)
+    usage_type = (await get_user_by_id(user_id))[0]["usage_type"]
+    print("usage_type:\n",usage_type)
+    # title, capacity, bank_id
     if usage_type == "ordinary":
         obuna_nomi = "Oddiy 🌱"
         test_baza, yangilash = 3, 3
@@ -70,12 +73,7 @@ async def view_subscription(msg: Message):
 
     await start_command(msg, respond)
 
+    info = await get_info_for_view_subs(user_id)
+    print("view_subs:76 \n", info)
     if info:
         await view_test_base_info(msg, user_id, info)
-# kelajakda obuna tarifni o'zgartirish uchun qo'llaniladi
-# keyboard = InlineKeyboardMarkup(row_width=2)
-# if usage_type != "founder":
-#     # Agar asoschi bo'lmasa, obuna tarifini yangilash yoki o'zgartirish imkoniyatini berish
-#     keyboard.add(InlineKeyboardButton(text="Tarifni yangilash", callback_data="update_subscription"))
-#
-# keyboard.add(InlineKeyboardButton(text="Bosh sahifa", callback_data="main_menu"))

@@ -2,7 +2,7 @@
 __pycache__/
 .env
 .venv
-data.db
+
 .idea
 get_postgres_url.sh
 
