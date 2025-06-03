@@ -2,10 +2,10 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from database.users import get_user_by_id
-from database.banks import get_info_for_view_subs, get_amount_by_user
-from database.users import create_user_if_not_exists
-from database.files import get_file_id_by_bank_id
+from database1.users import get_user_by_id
+from database1.banks import get_info_for_view_subs, get_amount_by_user
+from database1.users import create_user_if_not_exists
+from database1.files import get_file_id_by_bank_id
 from .handlers.base_handler import start_command
 
 subscripition_router =Router()

@@ -3,7 +3,7 @@ import os
 from aiogram import Router
 from aiogram.types import CallbackQuery, FSInputFile
 
-from database.files import get_file_name_by_bank, get_file_id_by_bank_id
+from database1.files import get_file_name_by_bank, get_file_id_by_bank_id
 
 sending_file_router = Router()
 

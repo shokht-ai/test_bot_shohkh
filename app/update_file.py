@@ -4,9 +4,9 @@ from datetime import datetime
 from aiogram.types import Message
 
 from .handlers.base_handler import start_command
-from database.banks import update_title_and_created_time_by_bank_id, update_file_by_bank
-from database.files import update_file_name, get_bank_id_by_file_id, get_file_path_by_file_id
-from database.questions import delete_questions_by_bank_id_bulk, insert_questions_bulk
+from database1.banks import update_title_and_created_time_by_bank_id, update_file_by_bank
+from database1.files import update_file_name, get_bank_id_by_file_id, get_file_path_by_file_id
+from database1.questions import delete_questions_by_bank_id_bulk, insert_questions_bulk
 
 
 

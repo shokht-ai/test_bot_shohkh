@@ -6,7 +6,7 @@ from app.handlers.base_handler import start_command
 
 from itertools import islice
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from database.banks import get_banks_by_user
+from database1.banks import get_banks_by_user
 from app.generate_pro_keys import generate_unique_id
 
 file_handler_router = Router()
@@ -76,7 +76,7 @@ async def no_commands(msg: Message):
 
 @file_handler_router.message(Command("pro"))
 async def check_founder(msg: Message):
-    from database.users import get_user_by_id
+    from database1.users import get_user_by_id
     user_type = get_user_by_id(msg.from_user.id)
     if user_type[0][0] != "founder":
         await no_commands(msg)

@@ -6,8 +6,8 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from database.pro_keys import create_pro_key, get_key_id_by_key, update_key_by_id, check_key_used_by_id, update_info_key
-from database.shared import execute_query
+from database1.pro_keys import create_pro_key, get_key_id_by_key, update_key_by_id, check_key_used_by_id, update_info_key
+from database1.shared import execute_query
 from app.handlers.base_handler import start_command
 
 pro_key_router = Router()
@@ -54,7 +54,7 @@ async def update_capacity(msg: Message):
         from .handlers.file_handler import no_commands
         await no_commands(msg)
         return
-    from database.banks import update_capacity_by_time
+    from database1.banks import update_capacity_by_time
     update_capacity_by_time()
 
 @pro_key_router.message(F.text.startswith == "/pro ")
@@ -102,7 +102,7 @@ def get_key_id(get_id):
 
 async def handle_user_subscription(msg: Message, key_id: int):
     """Foydalanuvchini obuna yangilash uchun yordamchi funksiyani bajaradi."""
-    from database.users import update_user_type, get_user_by_id
+    from database1.users import update_user_type, get_user_by_id
 
     user_id = msg.from_user.id
     info_user = get_user_by_id(user_id)
