@@ -34,12 +34,10 @@ async def set_bot_commands(bot: Bot):
 # Webhook so'rovlarni qabul qilish uchun handler
 async def handle_webhook(request):
     update = await request.json()
-    print(update)
     await dp.feed_raw_update(bot=b, update=update)
     return web.Response(text="OK")
 
 async def on_startup(bot: Bot, webhook_url: str):
-    print(webhook_url)
     # Webhookni o'rnatish
     await bot.set_webhook(
         url=webhook_url,
@@ -53,7 +51,6 @@ async def main():
 
     # Webhook sozlamalari
     WEBHOOK_HOST = os.getenv("WEBHOOK_HOST","YOUR_DOMEN")  # Railway domeningiz
-    print("webhook manizl:", WEBHOOK_HOST)
     WEBHOOK_PATH = "/webhook"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = "0.0.0.0"

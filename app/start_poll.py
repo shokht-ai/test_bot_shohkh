@@ -211,7 +211,6 @@ async def start_poll_test(callback: CallbackQuery, state: FSMContext):
 
     bank_id = int(parts[1])
     questions = await fetch_random_questions(bank_id)
-    print("start_poll:214  questions dan qatgan qiymatlar\n",questions)
 
     if not questions:
         await callback.message.answer("❌ Bu bankda savollar yo‘q.")

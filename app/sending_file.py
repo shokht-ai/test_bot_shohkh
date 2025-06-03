@@ -37,7 +37,6 @@ Batafsil tafsilotlar:
 
     bank_id = int(parts[1])
     file_id = (await get_file_id_by_bank_id(bank_id))[0]["file_id"]
-    print("sending_file:40 \n",file_id)
     file_path = (await get_file_name_by_bank(bank_id))[0]["file_name"]
     if not os.path.exists(file_path):
         await callback.message.answer("❌ Fayl topilmadi.")

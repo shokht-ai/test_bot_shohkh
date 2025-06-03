@@ -12,7 +12,6 @@ subscripition_router =Router()
 
 async def view_test_base_info(msg: Message, user_id, info):
     amount_base = (await get_amount_by_user(user_id))[0]["count"]
-    print("view_subs:15 \n",amount_base)
     usage_type = (await get_user_by_id(user_id))[0]["usage_type"]
     respond_text = f"🌟 Sizning test bazangizda hozirda <b>{amount_base}</b> ta test mavjud! 🎉\n\n"
 
@@ -49,7 +48,6 @@ async def view_subscription(msg: Message):
     user_first_name = msg.from_user.first_name
     await create_user_if_not_exists(user_id=user_id, chat_id=chat_id, username=username)
     usage_type = (await get_user_by_id(user_id))[0]["usage_type"]
-    print("usage_type:\n",usage_type)
     # title, capacity, bank_id
     if usage_type == "ordinary":
         obuna_nomi = "Oddiy 🌱"

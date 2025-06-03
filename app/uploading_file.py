@@ -98,7 +98,6 @@ async def create_new_bank(user_id: int, title: str, file_path: str) -> int | Non
     :return: Integer yoki None
     """
     bank_id = (await create_bank(user_id, title))["bank_id"]
-    print("bank_id uchun tekshirish\n",bank_id, type(bank_id))
     questions = extract_questions_from_excel(file_path)
     await insert_questions_bulk(bank_id, questions)
     return bank_id if len(questions) != 0 else None
@@ -224,7 +223,6 @@ async def check_user_limit(message: Message):
     if not check_caption:
         file_id = message.caption
         bank_id = (await get_bank_id_by_file_id(file_id))[0]["bank_id"]
-        print("bank id, uploading filedan:\n",bank_id)
         if len(bank_id) == 0:
             return False, "❌ Bunday ID li fayl topilmadi."
         # else:
@@ -233,7 +231,6 @@ async def check_user_limit(message: Message):
         amount = 0
     else:
         amount = (await get_amount_by_user(user_id))[0]["count"]
-        print("uploading_file:235 \n", amount)
         capacity = 1
     usage_type = (await get_user_type(user_id))[0]["usage_type"]
     if (amount >= 3 or capacity <= 0) and usage_type == "ordinary":

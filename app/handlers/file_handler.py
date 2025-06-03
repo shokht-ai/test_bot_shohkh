@@ -59,7 +59,6 @@ async def show_user_banks(message: Message):
     user_id = message.from_user.id
     # created_at, title, bank_id
     banks = await get_banks_by_user(user_id)
-    print("bank ro'yxati:\n", banks)
     # created_at, title, bank_id
     if not banks:
         await message.answer("📭 Sizda hozircha hech qanday test yo'q.")
