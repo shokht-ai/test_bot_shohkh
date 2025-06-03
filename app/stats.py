@@ -3,9 +3,9 @@ from aiogram.filters import Command
 from aiogram.types import Message
 
 from .handlers.base_handler import start_command
-from database1.banks import get_amount_banks
-from database1.usage_types import get_info_types
-from database1.users import get_amount_users, get_user_by_id
+from database.banks import get_amount_banks
+from database.usage_types import get_info_types
+from database.users import get_amount_users, get_user_by_id
 
 stats_router = Router()
 

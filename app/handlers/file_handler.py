@@ -6,7 +6,7 @@ from app.handlers.base_handler import start_command
 
 from itertools import islice
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
-from database1.banks import get_banks_by_user
+from database.banks import get_banks_by_user
 from app.generate_pro_keys import generate_unique_id
 
 file_handler_router = Router()

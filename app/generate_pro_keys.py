@@ -6,8 +6,8 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import Command
 
-from database1.pro_keys import create_pro_key, get_key_id_by_key, update_key_by_id, check_key_used_by_id, update_info_key
-from database1.shared import execute_query
+from database.pro_keys import create_pro_key, get_key_id_by_key, update_key_by_id, check_key_used_by_id, update_info_key
+from database.shared import execute_query
 from app.handlers.base_handler import start_command
 
 pro_key_router = Router()

@@ -9,7 +9,7 @@ from aiogram.types import CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, Me
 
 from app.handlers.base_handler import start_command
 from core.bot_instance import bot
-from database1.questions import get_questions_by_bank
+from database.questions import get_questions_by_bank
 
 start_poll_router = Router()
 

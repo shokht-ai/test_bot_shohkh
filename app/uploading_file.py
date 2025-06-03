@@ -8,11 +8,11 @@ from openpyxl import load_workbook
 
 from app.handlers.base_handler import start_command
 from app.update_file import sort_message
-from database1.banks import create_bank, get_amount_by_user, get_capacity_by_bank
-from database1.files import insert_file_name, get_bank_id_by_file_id
-from database1.questions import insert_questions_bulk
-from database1.usage_types import get_user_type
-from database1.users import create_user_if_not_exists, get_user_by_id
+from database.banks import create_bank, get_amount_by_user, get_capacity_by_bank
+from database.files import insert_file_name, get_bank_id_by_file_id
+from database.questions import insert_questions_bulk
+from database.usage_types import get_user_type
+from database.users import create_user_if_not_exists, get_user_by_id
 
 uploading_file_router = Router()
 
