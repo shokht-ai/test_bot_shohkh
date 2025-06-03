@@ -72,6 +72,5 @@ async def view_subscription(msg: Message):
     await start_command(msg, respond)
 
     info = await get_info_for_view_subs(user_id)
-    print("view_subs:76 \n", info)
     if info:
         await view_test_base_info(msg, user_id, info)
