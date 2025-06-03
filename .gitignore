@@ -1,5 +1,7 @@
-# Python __pycache__, .pyc, virtualenv
-__pycache__/
-venv/
 
-.idea
+__pycache__/
+.env
+.venv
+data.db
+
+

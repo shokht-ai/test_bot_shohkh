@@ -9,8 +9,8 @@ from aiohttp import web
 from database import initialize_database
 from database.banks import update_capacity_by_time
 from core.bot_instance import bot as b
-from app.handlers.file_handler import all_router
-from app.handlers.base_handler import base_handeler_router
+from app import all_router
+
 
 dp = Dispatcher(storage=MemoryStorage())
 
@@ -48,7 +48,7 @@ async def main():
     initialize_database()  # Faqat bir marta ishlatiladi
 
     # Webhook sozlamalari
-    WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "https://your-domen.com")  # Railway domeningiz
+    WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "https://f0d3-94-158-58-31.ngrok-free.app")  # Railway domeningiz
     WEBHOOK_PATH = "/webhook"
     WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
     WEBAPP_HOST = "0.0.0.0"

@@ -39,6 +39,9 @@ def get_file_id_by_bank_id(bank_id):
 def get_bank_id_by_file_id(file_id):
     return fetch_all("SELECT bank_id FROM files WHERE file_id = ?", (file_id,))
 
+def get_file_path_by_file_id(file_id):
+    return fetch_all("SELECT file_name FROM files WHERE file_id = ?", (file_id,))
+
 
 def update_file_name(file_id, file_name):
     execute_query("UPDATE files SET file_name = ? WHERE file_id = ?", (file_name, file_id,))
