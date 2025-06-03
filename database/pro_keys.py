@@ -1,4 +1,4 @@
-from database1.shared import get_cursor, execute_query, fetch_all
+from database.shared import get_cursor, execute_query, fetch_all
 
 def create_pro_key_table():
     execute_query("""
