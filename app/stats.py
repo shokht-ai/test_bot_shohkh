@@ -16,8 +16,8 @@ async def info_bot_stats(msg: Message):
         from .handlers.file_handler import no_commands
         await no_commands(msg)
         return
-    amount_banks = await get_amount_banks()[0]['count']
-    amount_users = await get_amount_users()[0]['count']
+    amount_banks = (await get_amount_banks())[0]['count']
+    amount_users = (await get_amount_users())[0]['count']
     # types_name, users_amount
     info_types = await get_info_types()
 
