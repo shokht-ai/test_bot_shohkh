@@ -6,8 +6,8 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import BotCommand
 from aiohttp import web
 
-from database1 import initialize_database
-from database1.banks import update_capacity_by_time
+from database import initialize_database
+from database.banks import update_capacity_by_time
 from core.bot_instance import bot as b
 from app import all_router
 
