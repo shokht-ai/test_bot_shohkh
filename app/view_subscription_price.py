@@ -4,7 +4,6 @@ from aiogram.filters import Command
 
 from database.users import get_user_by_id
 from database.banks import get_info_for_view_subs, get_amount_by_user
-from database.users import create_user_if_not_exists
 from database.files import get_file_id_by_bank_id
 from app.handlers.base_handler import start_command
 
@@ -43,10 +42,8 @@ async def view_test_base_info(msg: Message, user_id, info):
 async def view_subscription(msg: Message):
     global obuna_nomi, test_baza, yangilash
     user_id = msg.from_user.id
-    chat_id = msg.chat.id
-    username = msg.from_user.username
     user_first_name = msg.from_user.first_name
-    await create_user_if_not_exists(user_id=user_id, chat_id=chat_id, username=username)
+
     usage_type = (await get_user_by_id(user_id))[0]["usage_type"]
     # title, capacity, bank_id
     if usage_type == "ordinary":

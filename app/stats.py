@@ -11,7 +11,8 @@ stats_router = Router()
 
 @stats_router.message(Command("info_bot"))
 async def info_bot_stats(msg: Message):
-    client_type = await get_user_by_id(msg.from_user.id)[0]['usage_type']
+    client_type = (await get_user_by_id(msg.from_user.id))[0]['usage_type']
+    print(client_type)
     if client_type != "founder":
         from .handlers.file_handler import no_commands
         await no_commands(msg)

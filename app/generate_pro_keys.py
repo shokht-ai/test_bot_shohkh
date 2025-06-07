@@ -26,7 +26,7 @@ async def generate_unique_id(msg: Message):
     generate = " ".join([generate[:14], generate[15:]]).replace(" ", str(key_id))
     generate = str(key_id) + ":".join(sample(generate, len(generate)))
     await update_key_by_id(generate, key_id)
-    await start_command(msg, f"Pro obuna uchun yangi kalit:\n<pre>{generate}</pre>")
+    await start_command(msg, f"Pro obuna uchun yangi kalit:\n<pre>/pro {generate}</pre>")
 
 
 
@@ -55,14 +55,13 @@ async def update_capacity(msg: Message):
 
 @pro_key_router.message(F.text.startswith == "/pro ")
 async def check_key_used(msg: Message):
-    get_id_list = list(msg.text.split(" "))
+    get_id_list = list(msg.text.split(" "))[1]
 
     if not is_valid_key_format(get_id_list):
         await start_command(msg, "Kalit mavjud emas")
         return
 
-    get_id = get_id_list[1]
-    key_id = get_key_id(get_id)
+    key_id = get_key_id(get_id_lists)
 
     if not key_id or not key_id.isdigit():
         await start_command(msg, "Kalit mavjud emas‼️")

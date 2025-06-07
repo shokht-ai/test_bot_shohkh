@@ -12,7 +12,7 @@ from database.banks import create_bank, get_amount_by_user, get_capacity_by_bank
 from database.files import insert_file_name, get_bank_id_by_file_id
 from database.questions import insert_questions_bulk
 from database.usage_types import get_user_type
-from database.users import create_user_if_not_exists, get_user_by_id
+from database.users import get_user_by_id
 
 
 from dotenv import load_dotenv
@@ -164,8 +164,7 @@ async def process_valid_excel_file(message, file_path: str, original_file_name: 
         return
     user_id = message.from_user.id
     chat_id = message.chat.id
-    username = message.from_user.username or ""
-    await create_user_if_not_exists(user_id=user_id, chat_id=chat_id, username=username)
+
 
     bank_name = original_file_name.replace(".xlsx", "")
     bank_id = await create_new_bank(user_id, bank_name, file_path)

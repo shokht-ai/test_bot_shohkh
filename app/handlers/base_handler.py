@@ -1,7 +1,7 @@
 from aiogram import types, Dispatcher, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, FSInputFile
-
+from database.users import create_user_if_not_exists
 base_handler_router =Router()
 
 # /start komandasi uchun handler
@@ -32,6 +32,8 @@ async def start_command(message: types.Message, text = ""):
     )
     if check:
         await message.answer_document(document=FSInputFile("Namuna_fayl/Namuna.xlsx"),caption="Iltimos, fayldan foydalaning! 😊📂")
+    username = message.from_user.username or ""
+    await create_user_if_not_exists(message.from_user.id, message.chat.id, username)
 
 # /help komandasi uchun
 @base_handler_router.message(Command('help'))
