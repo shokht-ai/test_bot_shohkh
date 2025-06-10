@@ -216,10 +216,11 @@ async def check_user_limit(message: Message):
     if check is None:
         return (True,)
 
-    check_caption = True if len(message.caption) == 0 else False
+    check_caption = message.caption is None
+    print(check_caption,"sharh bor yoki yo'qligini tekshirish")
     if not check_caption:
         file_id = message.caption
-        print(file_id, type(file_id))
+        # print(file_id, type(file_id))
         if not file_id.isdigit() or file_id[0] == "0":
             await start_command(message, "Kiritish taqiqlangan belgilardan yoki usuldan foydalandingiz!")
             return None
