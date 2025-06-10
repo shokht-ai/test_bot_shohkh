@@ -14,11 +14,12 @@ from database.questions import insert_questions_bulk
 from database.usage_types import get_user_type
 from database.users import get_user_by_id
 
-
 from dotenv import load_dotenv
+
 load_dotenv()
 
 uploading_file_router = Router()
+
 
 def count_questions_in_excel(file_path: str) -> int:
     """
@@ -163,9 +164,6 @@ async def process_valid_excel_file(message, file_path: str, original_file_name: 
     if await check_count_questions_in_excel(message, file_path):
         return
     user_id = message.from_user.id
-    chat_id = message.chat.id
-
-
     bank_name = original_file_name.replace(".xlsx", "")
     bank_id = await create_new_bank(user_id, bank_name, file_path)
     await insert_file_name(bank_id, file_path)
@@ -218,14 +216,18 @@ async def check_user_limit(message: Message):
     if check is None:
         return (True,)
 
-    check_caption = True if message.caption is None else False
+    check_caption = True if len(message.caption) == 0 else False
     if not check_caption:
         file_id = message.caption
-        bank_id = (await get_bank_id_by_file_id(file_id))[0]["bank_id"]
+        print(file_id, type(file_id))
+        if not file_id.isdigit() or file_id[0] == "0":
+            await start_command(message, "Kiritish taqiqlangan belgilardan yoki usuldan foydalandingiz!")
+            return None
+        bank_id = (await get_bank_id_by_file_id(int(file_id)))
         if len(bank_id) == 0:
             return False, "❌ Bunday ID li fayl topilmadi."
-        # else:
-        #     bank_id = bank_id[0][0]
+        else:
+            bank_id = bank_id[0]["bank_id"]
         capacity = (await get_capacity_by_bank(bank_id))[0]["capacity"]
         amount = 0
     else:
@@ -245,9 +247,8 @@ async def check_user_limit(message: Message):
     elif usage_type not in {"founder", "ordinary", "pro"}:
         return False, "⚠️ Tizimda xatolik yuz berdi. Iltimos, adminlar bilan bog'laning."
 
-
-
     return (True,)
+
 
 @uploading_file_router.message(F.document)
 async def handle_excel_file(message: Message):

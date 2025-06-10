@@ -37,7 +37,7 @@ async def delete_questions_by_bank_id_bulk(bank_id: int):
         [bank_id]
     )
 
-async def get_questions_by_bank(bank_id):
+async def get_questions_by_bank(bank_id: int):
     records = await fetch_all(
         """
         SELECT question, correct, wrong1, wrong2, wrong3 
@@ -48,7 +48,7 @@ async def get_questions_by_bank(bank_id):
     )
     return [dict(record) for record in records]
 
-async def delete_questions_by_bank(bank_id):
+async def delete_questions_by_bank(bank_id: int):
     await execute_query(
         "DELETE FROM questions WHERE bank_id = $1",
         [bank_id]

@@ -19,7 +19,7 @@ async def create_bank_table():
         );
     """)
 
-async def create_bank(user_id, title):
+async def create_bank(user_id: int, title: str):
     query = """
         INSERT INTO banks (user_id, title, created_at, capacity) 
         VALUES ($1, $2, $3, $4) 

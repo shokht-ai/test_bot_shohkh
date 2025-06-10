@@ -18,7 +18,7 @@ async def sort_message(msg: Message, file_path):
     if await check_count_questions_in_excel(msg, file_path):
         return
 
-    bank_id = await get_bank_id_by_file_id(file_id)
+    bank_id = await get_bank_id_by_file_id(int(file_id))
 
     if bank_id is None:
         os.remove(file_path)
@@ -29,7 +29,7 @@ async def sort_message(msg: Message, file_path):
         os.remove((await get_file_path_by_file_id(bank_id))[0]['file_name'])
 
     await update_title_and_created_time_by_bank_id(file_name, created_date, bank_id)
-    await update_file_name(file_id, file_path)
+    await update_file_name(int(file_id), file_path)
     await delete_questions_by_bank_id_bulk(bank_id)
 
     questions = await extract_questions_from_excel(file_path)

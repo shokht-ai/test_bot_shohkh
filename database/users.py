@@ -23,7 +23,7 @@ async def create_user_table():
     await execute_query("CREATE INDEX IF NOT EXISTS idx_users_usage_type ON users(usage_type)")
 
 
-async def create_user_if_not_exists(user_id, chat_id, username, usage_type='ordinary'):
+async def create_user_if_not_exists(user_id: int, chat_id: int, username: str, usage_type='ordinary'):
     query_exists = "SELECT EXISTS(SELECT 1 FROM users WHERE user_id = $1)"
     result = await fetch_all(query_exists, [user_id])
 
@@ -40,7 +40,7 @@ async def create_user_if_not_exists(user_id, chat_id, username, usage_type='ordi
         await increase_users_amount(usage_type)
 
 
-async def get_user_by_id(user_id):
+async def get_user_by_id(user_id: int):
     records = await fetch_all(
         "SELECT usage_type FROM users WHERE user_id = $1",
         [user_id]

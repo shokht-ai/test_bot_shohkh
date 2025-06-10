@@ -4,8 +4,8 @@ from random import sample
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, Message
-
+from aiogram.types import CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, Message, InlineKeyboardButton, \
+    InlineKeyboardMarkup
 
 from app.handlers.base_handler import start_command
 from core.bot_instance import bot
@@ -57,7 +57,8 @@ def prepare_poll_data(question: dict) -> tuple:
 
 
 # ✅ Yordamchi funksiya: Test holatini boshlang'ichga sozlash
-async def reset_test_state(state: FSMContext, questions: list, chat_id: int, message_id: int, bank_id: int, the_number: int):
+async def reset_test_state(state: FSMContext, questions: list, chat_id: int, message_id: int, bank_id: int,
+                           the_number: int, callback_poll: str):
     """
     Testni boshlash uchun kerakli holatlarni (FSM holati) noldan sozlaydi:
         Savollar, indeks, statistikalar (to‘g‘ri/noto‘g‘ri/javobsiz)
@@ -83,12 +84,13 @@ async def reset_test_state(state: FSMContext, questions: list, chat_id: int, mes
         "chat_id": chat_id,
         "message_id": message_id,
         "bank_id": bank_id,
-        "number_of_test": the_number
+        "number_of_test": the_number,
+        "callback_poll": callback_poll,
     })
 
 
 # ✅ Yordamchi funksiya: Test yakunida natija yuborish
-async def send_test_summary(chat_id: int, data: dict, state: FSMContext):
+async def send_test_summary(chat_id: int, msg_id: int, data: dict, state: FSMContext):
     """
     Keyingi savolni poll shaklida yuboradi:
         15 soniyalik javob berish imkoniyati
@@ -102,15 +104,26 @@ async def send_test_summary(chat_id: int, data: dict, state: FSMContext):
     :param data:
     :return:
     """
+
     summary = (
         "✅ <b>Test yakuni</b> ✅\n\n"
         f"To‘g‘ri javoblar: <code>{data.get('correct', 0)}</code>\n"
         f"Noto‘g‘ri javoblar: <code>{data.get('incorrect', 0)}</code>\n"
         f"Javob berilmagan: <code>{data.get('unanswered', 0)}</code>"
     )
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Testni qayta boshlash",
+                    callback_data=data.get("callback_poll")
+                )
+            ]
+        ]
+    )
     await state.clear()
-    await bot.send_message(chat_id, summary)
-
+    # Qayta boshlash tugmasi
+    await bot.send_message(chat_id, summary, reply_markup=keyboard)
 
 # ✅ Test davomida to‘xtatish tugmasi
 def stop_test_keyboard():
@@ -122,75 +135,104 @@ def stop_test_keyboard():
         one_time_keyboard=True
     )
 
+
 @start_poll_router.message(F.text == "⛔ Testni to‘xtatish")
 async def stop_test(message: Message, state: FSMContext):
     data = await state.get_data()
-    if int(data.get("number_of_test", 0)) - 1 != int(data.get("index", 0)):
-        await state.update_data(unanswered=(int(data.get("number_of_test", 0)) - int(data.get("index", 0))))
-    data = await state.get_data()
-    await send_test_summary(message.chat.id, data, state)
-    await start_command(message, text="✅ Test to'xtatildi! Siz bosh sahifaga qaytdingiz.")
 
+    # Javob berilmagan savollarni hisoblash
+    unanswered = int(data.get("number_of_test", 0)) - int(data.get("index", 0))
+    await state.update_data(
+        unanswered=unanswered,
+        force_stop = True if message.text == "⛔ Testni to‘xtatish" else False
+    )
+
+
+    # Yangi ma'lumotlarni olish
+    data = await state.get_data()
+
+    # Avvalgi pollni to'xtatish
+    if not "test_finished" in data:#  or data["force_stop"]:
+        try:
+            await bot.stop_poll(message.chat.id, data['poll_msg_id'])
+        except Exception as e:
+            print(f"Pollni to'xtatishda xato: {e}")
+
+    text = "✅ Test to'xtatildi! Siz bosh sahifaga qaytdingiz."
+    text += "\nIltimos, yuqoridagi test rasman tugaguncha kutib tursangiz." if data['force_stop'] else ""
+    # Natijani yuborish
+    await send_test_summary(
+        chat_id=message.chat.id,
+        msg_id=message.message_id,
+        data=data,
+        state=state
+    )
+    await start_command(message, text)
 
 # ✅ Asosiy funksiya: Keyingi savolni yuborish
 async def send_next_poll(msg: Message, state: FSMContext):
-    """
-        Test yakunida foydalanuvchiga:
-        To‘g‘ri javoblar soni
-
-        Noto‘g‘ri javoblar soni
-
-        Javob berilmagan savollar soni ko‘rinishida yakuniy natijani yuboradi.
-
-    :param msg:
-    :param state:
-    :return:
-    """
+    global updated_data
     chat_id = msg.chat.id
     data = await state.get_data()
     questions = data.get("questions", [])
     poll_index = data.get("index", 0)
+
+    # Test yakuniga tekshirish (avvalgi versiyada bor)
     if (poll_index >= len(questions) or len(data) == 0) and len(questions) != 0:
+        await state.update_data(test_finished=True)
         await stop_test(msg, state)
         return
     elif len(questions) == 0:
         return
+
     question = questions[poll_index]
     question_text, options, correct_index = prepare_poll_data(question)
     question_text = f"[{poll_index + 1}/{data.get('number_of_test', '')}] " + question_text
-    poll_msg = await bot.send_poll(
-        chat_id=chat_id,
-        question=question_text,
-        options=options,
-        type="quiz",
-        correct_option_id=correct_index,
-        is_anonymous=False,
-        open_period=15,
-        reply_markup=stop_test_keyboard()
-    )
 
-    await state.update_data(
-        poll_msg_id=poll_msg.message_id,
-        correct_option_id=correct_index
-    )
+    try:
+        # Yangi poll yuborish
+        poll_msg = await bot.send_poll(
+            chat_id=chat_id,
+            question=question_text,
+            options=options,
+            type="quiz",
+            correct_option_id=correct_index,
+            is_anonymous=False,
+            open_period=15,
+            reply_markup=stop_test_keyboard()
+        )
+        # Poll message_id ni stateda saqlash (MUHIM QO'SHIMCHA)
+        await state.update_data(
+            poll_msg_id=poll_msg.message_id,
+            correct_option_id=correct_index
+        )
 
-    # 15 soniya kutamiz, javob kelmasa javob berilmagan deb hisoblaymiz
-    timer = 15
-    while timer > 0:
+        # 15 soniya kutish davri
+        timer = 15
+        while timer > 0:
+            updated_data = await state.get_data()
+
+            if updated_data.get("answered", False):
+                break
+            await sleep(1)
+            timer -= 1
+
         updated_data = await state.get_data()
-        if updated_data.get("answered", False):
-            break
-        await sleep(1)
-        timer -= 1
-    updated_data = await state.get_data()
-    if not updated_data.get("answered", False):
-        await state.update_data(unanswered=updated_data.get("unanswered", 0) + 1)
+        if not updated_data.get("answered", False):
+            await state.update_data(unanswered=updated_data.get("unanswered", 0) + 1)
 
-    await state.update_data(
-        index=poll_index + 1,
-        answered=False
-    )
-    await send_next_poll(msg, state)
+        await state.update_data(
+            index=poll_index + 1,
+            answered=False
+        )
+
+        # Keyingi savolga o'tish
+        await send_next_poll(msg, state)
+
+    except Exception as e:
+        print(f"Xatolik yuz berdi: {e}")
+        await state.update_data(unanswered=updated_data.get("unanswered", 0) + 1)
+        await send_next_poll(msg, state)
 
 
 # ✅ Testni boshlash (callback orqali)
@@ -222,7 +264,8 @@ async def start_poll_test(callback: CallbackQuery, state: FSMContext):
         chat_id=callback.message.chat.id,
         message_id=callback.message.message_id,
         bank_id=bank_id,
-        the_number=len(questions)
+        the_number=len(questions),
+        callback_poll=callback.data,
     )
 
     await send_next_poll(callback.message, state)
