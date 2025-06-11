@@ -48,7 +48,7 @@ def count_questions_in_excel(file_path: str) -> int:
 
 
     except Exception as e:
-        logger.exception(f"uploading_file::count_questions_in_excel da xatolik\n{e}")
+        logger.info(f"uploading_file::count_questions_in_excel da xatolik\n{e}")
         return 0
 
 
@@ -81,7 +81,7 @@ def extract_questions_from_excel(file_path: str) -> list:
 
 
     except Exception as e:
-        logger.exception(f"uploading_file::extract_questions_from_excel da xatolik\n{e}")
+        logger.info(f"uploading_file::extract_questions_from_excel da xatolik\n{e}")
         return []
 
 
@@ -202,7 +202,7 @@ def check_excel_file(file_path: str):
         return True, f"✅ Fayl yuklandi. {real_question_count} ta savol bor."
 
     except Exception as e:
-        logger.exception(f"uploading_file::check_excel_file da xatolik\n{e}")
+        logger.info(f"uploading_file::check_excel_file da xatolik\n{e}")
         return False, f"😕 Xatolik yuz berdi: {str(e)}"
 
 
@@ -254,7 +254,7 @@ async def check_user_limit(message: Message):
 
         return (True,)
     except Exception as e:
-        logger.exception(f"uploading_file::check_user_limit da xatolik\n{e}")
+        logger.info(f"uploading_file::check_user_limit da xatolik\n{e}")
         return None
 
 

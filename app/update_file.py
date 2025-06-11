@@ -42,4 +42,4 @@ async def sort_message(msg: Message, file_path):
         await start_command(msg, "✅ Fayl bazaga muvaffaqiyatli yangilandi.")
         # file_id borligni tekshirish yo'q bo'lsa fileni downloadsdan o'chirish.
     except Exception as e:
-        logger.exception(f"update_file::sort_message da xatolik\n{e}")
+        logger.info(f"update_file::sort_message da xatolik\n{e}")

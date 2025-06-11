@@ -49,5 +49,5 @@ async def send_bank_file(callback: CallbackQuery):
             )
         )
     except Exception as e:
-        logger.exception(f"sending_file::Xatolik yuz berdi\n{e}")
+        logger.info(f"sending_file::Xatolik yuz berdi\n{e}")
         await callback.message.answer("⚠️ Ichki xatolik yuz berdi. Iltimos, keyinroq urinib ko‘ring.")

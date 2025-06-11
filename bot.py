@@ -17,7 +17,7 @@ LOG_FILE = "bot.log"
 
 # Logger sozlash
 logger = logging.getLogger(__name__)
-logger.disabled = True
+logger.disabled = False
 logger.setLevel(logging.DEBUG)
 
 # Log formatini aniqlash
@@ -79,12 +79,12 @@ async def cleanup(bot: Bot, runner_clean: web.AppRunner):
         await bot.delete_webhook()
         await bot.session.close()
     except Exception as e:
-        logger.error(f"Error during cleanup: {e}")
+        logger.info(f"Error during cleanup: {e}")
 
     try:
         await runner_clean.cleanup()
     except Exception as e:
-        logger.error(f"Error cleaning up runner: {e}")
+        logger.info(f"Error cleaning up runner: {e}")
 
 
 async def main():
@@ -120,16 +120,16 @@ async def main():
 
         except OSError as e:
             if e.errno == 98:  # Address already in use
-                logger.error(f"Port {WEBAPP_PORT} is already in use. Please choose another port.")
+                logger.info(f"Port {WEBAPP_PORT} is already in use. Please choose another port.")
                 raise
             else:
-                logger.error(f"Server error: {e}")
+                logger.info(f"Server error: {e}")
                 raise
 
     except asyncio.CancelledError:
         logger.info("Bot shutting down...")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.info(f"Unexpected error: {e}")
     finally:
         logger.info("Cleaning up resources...")
         await cleanup(b, runner)

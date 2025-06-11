@@ -54,7 +54,7 @@ async def list_user_banks(message: Message):
             reply_markup=inline_kb
         )
     except Exception as e:
-        logger.exception(f"list_user_banks handlerda xatolik: {e}")
+        logger.info(f"list_user_banks handlerda xatolik: {e}")
 
 @file_handler_router.message(F.text == "📚 Testlarim")
 @file_handler_router.message(Command("testlarim"))
@@ -87,7 +87,7 @@ async def show_user_banks(message: Message):
 
         await message.answer(response)
     except Exception as e:
-        logger.exception(f"show_user_banks handlerda xatolik: {e}")
+        logger.info(f"show_user_banks handlerda xatolik: {e}")
 
 @file_handler_router.message()
 async def no_commands(msg: Message):
@@ -95,7 +95,7 @@ async def no_commands(msg: Message):
         # logger.info(f"Noaniq buyruq: {msg.text} | from user: {msg.from_user.id}")
         await start_command(msg, text="🤔 Kechirasiz, bu buyruqni tushunmadim. Menyudan biror amalni tanlang.")
     except Exception as e:
-        logger.exception(f"no_commands handlerda xatolik: {e}")
+        logger.info(f"no_commands handlerda xatolik: {e}")
 
 @file_handler_router.message(Command("pro"))
 async def check_founder(msg: Message):
@@ -108,4 +108,4 @@ async def check_founder(msg: Message):
             # logger.info(f"Founder {msg.from_user.id} pro komandasini ishga tushirdi.")
             await generate_unique_id(msg)
     except Exception as e:
-        logger.exception(f"check_founder handlerda xatolik: {e}")
+        logger.info(f"check_founder handlerda xatolik: {e}")

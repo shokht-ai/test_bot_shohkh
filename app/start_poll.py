@@ -14,8 +14,8 @@ from database.questions import get_questions_by_bank
 
 
 # Logger sozlash
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 start_poll_router = Router()
 
@@ -71,6 +71,7 @@ async def reset_test_state(state: FSMContext, questions: list, chat_id: int, mes
 
         Chat va message ID, bank ID
 
+    :param callback_poll
     :param the_number:
     :param state:
     :param questions:
@@ -175,7 +176,7 @@ async def stop_test(message: Message, state: FSMContext):
         )
         await start_command(message, text)
     except Exception as e:
-        logger.exception(f"start_poll::stop_test da xatolik\n{e}")
+        logger.info(f"start_poll::stop_test da xatolik\n{e}")
 
 # ✅ Asosiy funksiya: Keyingi savolni yuborish
 async def send_next_poll(msg: Message, state: FSMContext):

@@ -33,7 +33,7 @@ async def generate_unique_id(msg: Message):
         await update_key_by_id(generate, key_id)
         await start_command(msg, f"Pro obuna uchun yangi kalit:\n<pre>/pro {generate}</pre>")
     except Exception as e:
-        logger.exception(f"generate_pro_keys::generate_unique_id xatolik yuz berdi\n{e}")
+        logger.info(f"generate_pro_keys::generate_unique_id xatolik yuz berdi\n{e}")
 
 @pro_key_router.message(Command("start_users:"))
 async def restart_users(msg: Message):
@@ -47,7 +47,7 @@ async def restart_users(msg: Message):
             from app.handlers.file_handler import no_commands
             await no_commands(msg)
     except Exception as e:
-        logger.exception(f"generate_pro_keys::restart_users xatolik yuz berdi\n{e}")
+        logger.info(f"generate_pro_keys::restart_users xatolik yuz berdi\n{e}")
 
 @pro_key_router.message(Command("update_capacity"))
 async def update_capacity(msg: Message):
@@ -59,7 +59,7 @@ async def update_capacity(msg: Message):
         from database.banks import update_capacity_by_time
         await update_capacity_by_time()
     except Exception as e:
-        logger.exception(f"generate_pro_keys::update_capacity xatolik yuz berdi\n{e}")
+        logger.info(f"generate_pro_keys::update_capacity xatolik yuz berdi\n{e}")
 
 @pro_key_router.message(F.text.startswith == "/pro ")
 async def check_key_used(msg: Message):
@@ -91,7 +91,7 @@ async def check_key_used(msg: Message):
 
         await start_command(msg, f"Tabriklaymiz obuna tarifingiz Pro ga ko'tarildi.")
     except Exception as e:
-        logger.exception(f"generate_pro_keys::check_key_used xatolik yuz berdi\n{e}")
+        logger.info(f"generate_pro_keys::check_key_used xatolik yuz berdi\n{e}")
 
 def is_valid_key_format(get_id_list):
     return len(get_id_list) == 2 and len(get_id_list[1]) == 75 and get_id_list[1].find(":") != -1
@@ -112,4 +112,4 @@ async def handle_user_subscription(msg: Message, key_id: int):
         await update_info_key(key_id)
         await update_user_type(user_id, "pro")
     except Exception as e:
-        logger.exception(f"generate_pro_keys::handle_user_subscription xatolik yuz berdi\n{e}")
+        logger.info(f"generate_pro_keys::handle_user_subscription xatolik yuz berdi\n{e}")
