@@ -1,8 +1,9 @@
 import os
+import uuid
+import logging
 
 from aiogram import Router, F
 from aiogram.types import Message
-import uuid
 
 from openpyxl import load_workbook
 
@@ -15,6 +16,8 @@ from database.usage_types import get_user_type
 from database.users import get_user_by_id
 
 from dotenv import load_dotenv
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -45,7 +48,7 @@ def count_questions_in_excel(file_path: str) -> int:
 
 
     except Exception as e:
-        print(f"Xatolik yuz berdi: {e}")
+        logger.exception(f"uploading_file::count_questions_in_excel da xatolik\n{e}")
         return 0
 
 
@@ -78,7 +81,7 @@ def extract_questions_from_excel(file_path: str) -> list:
 
 
     except Exception as e:
-        print(f"Xatolik yuz berdi: {e}")
+        logger.exception(f"uploading_file::extract_questions_from_excel da xatolik\n{e}")
         return []
 
 
@@ -199,56 +202,61 @@ def check_excel_file(file_path: str):
         return True, f"✅ Fayl yuklandi. {real_question_count} ta savol bor."
 
     except Exception as e:
+        logger.exception(f"uploading_file::check_excel_file da xatolik\n{e}")
         return False, f"😕 Xatolik yuz berdi: {str(e)}"
 
 
 # foydalanuvchilarga qo'yilgan limitlarni tekshirish
 # admin uchun tekshirish o'tqizilmaydi
 async def check_user_limit(message: Message):
-    file = message.document
+    try:
+        file = message.document
 
-    if not file.file_name.endswith(".xlsx"):
-        return False, "❌ Iltimos, faqat .xlsx formatdagi fayl yuboring."
+        if not file.file_name.endswith(".xlsx"):
+            return False, "❌ Iltimos, faqat .xlsx formatdagi fayl yuboring."
 
-    user_id = message.from_user.id
-    check = await get_user_by_id(user_id)
+        user_id = message.from_user.id
+        check = await get_user_by_id(user_id)
 
-    if check is None:
+        if check is None:
+            return (True,)
+
+        check_caption = message.caption is None
+        if not check_caption:
+            file_id = message.caption
+            # print(file_id, type(file_id))
+            if not file_id.isdigit() or file_id[0] == "0":
+                await start_command(message, "Kiritish taqiqlangan belgilardan yoki usuldan foydalandingiz!")
+                return None
+            bank_id = (await get_bank_id_by_file_id(int(file_id)))
+            if len(bank_id) == 0:
+                return False, "❌ Bunday ID li fayl topilmadi."
+            else:
+                bank_id = bank_id[0]["bank_id"]
+            capacity = (await get_capacity_by_bank(bank_id))[0]["capacity"]
+            amount = 0
+        else:
+            amount = (await get_amount_by_user(user_id))[0]["count"]
+            capacity = 1
+        usage_type = (await get_user_type(user_id))[0]["usage_type"]
+        if (amount >= 3 or capacity <= 0) and usage_type == "ordinary":
+            if amount >= 3:
+                return False, "❌ Testlar bazangizda joy qolmagan."
+            else:
+                return False, "❌ Bu testni qayta yangilash imkoniyatingiz tugadi."
+        elif (amount >= 5 or capacity <= 0) and usage_type == "pro":
+            if amount >= 5:
+                return False, "❌ Testlar bazangizda joy qolmagan."
+            else:
+                return False, "❌ Bu testni qayta yangilash imkoniyatingiz tugadi."
+        elif usage_type not in {"founder", "ordinary", "pro"}:
+            return False, "⚠️ Tizimda xatolik yuz berdi. Iltimos, adminlar bilan bog'laning."
+
         return (True,)
+    except Exception as e:
+        logger.exception(f"uploading_file::check_user_limit da xatolik\n{e}")
+        return None
 
-    check_caption = message.caption is None
-    print(check_caption,"sharh bor yoki yo'qligini tekshirish")
-    if not check_caption:
-        file_id = message.caption
-        # print(file_id, type(file_id))
-        if not file_id.isdigit() or file_id[0] == "0":
-            await start_command(message, "Kiritish taqiqlangan belgilardan yoki usuldan foydalandingiz!")
-            return None
-        bank_id = (await get_bank_id_by_file_id(int(file_id)))
-        if len(bank_id) == 0:
-            return False, "❌ Bunday ID li fayl topilmadi."
-        else:
-            bank_id = bank_id[0]["bank_id"]
-        capacity = (await get_capacity_by_bank(bank_id))[0]["capacity"]
-        amount = 0
-    else:
-        amount = (await get_amount_by_user(user_id))[0]["count"]
-        capacity = 1
-    usage_type = (await get_user_type(user_id))[0]["usage_type"]
-    if (amount >= 3 or capacity <= 0) and usage_type == "ordinary":
-        if amount >= 3:
-            return False, "❌ Testlar bazangizda joy qolmagan."
-        else:
-            return False, "❌ Bu testni qayta yangilash imkoniyatingiz tugadi."
-    elif (amount >= 5 or capacity <= 0) and usage_type == "pro":
-        if amount >= 5:
-            return False, "❌ Testlar bazangizda joy qolmagan."
-        else:
-            return False, "❌ Bu testni qayta yangilash imkoniyatingiz tugadi."
-    elif usage_type not in {"founder", "ordinary", "pro"}:
-        return False, "⚠️ Tizimda xatolik yuz berdi. Iltimos, adminlar bilan bog'laning."
-
-    return (True,)
 
 
 @uploading_file_router.message(F.document)

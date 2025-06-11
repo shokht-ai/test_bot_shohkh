@@ -75,7 +75,7 @@ async def update_file_by_bank(bank_id: int):
         [bank_id]
     )
 
-async def update_title_and_created_time_by_bank_id(title: str, created_at: str, bank_id: int):
+async def update_title_and_created_time_by_bank_id(title: str, created_at: datetime, bank_id: int):
     await execute_query(
         "UPDATE banks SET title = $1, created_at = $2 WHERE bank_id = $3",
         [title, created_at, bank_id]

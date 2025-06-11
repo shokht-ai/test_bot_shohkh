@@ -1,3 +1,4 @@
+import logging
 from asyncio import sleep
 from random import sample
 
@@ -10,6 +11,11 @@ from aiogram.types import CallbackQuery, ReplyKeyboardMarkup, KeyboardButton, Me
 from app.handlers.base_handler import start_command
 from core.bot_instance import bot
 from database.questions import get_questions_by_bank
+
+
+# Logger sozlash
+logger = logging.getLogger(__name__)
+
 
 start_poll_router = Router()
 
@@ -90,7 +96,7 @@ async def reset_test_state(state: FSMContext, questions: list, chat_id: int, mes
 
 
 # ✅ Yordamchi funksiya: Test yakunida natija yuborish
-async def send_test_summary(chat_id: int, msg_id: int, data: dict, state: FSMContext):
+async def send_test_summary(chat_id: int, data: dict, state: FSMContext):
     """
     Keyingi savolni poll shaklida yuboradi:
         15 soniyalik javob berish imkoniyati
@@ -138,36 +144,38 @@ def stop_test_keyboard():
 
 @start_poll_router.message(F.text == "⛔ Testni to‘xtatish")
 async def stop_test(message: Message, state: FSMContext):
-    data = await state.get_data()
+    try:
+        data = await state.get_data()
 
-    # Javob berilmagan savollarni hisoblash
-    unanswered = int(data.get("number_of_test", 0)) - int(data.get("index", 0))
-    await state.update_data(
-        unanswered=unanswered,
-        force_stop = True if message.text == "⛔ Testni to‘xtatish" else False
-    )
+        # Javob berilmagan savollarni hisoblash
+        unanswered = int(data.get("number_of_test", 0)) - int(data.get("index", 0))
+        await state.update_data(
+            unanswered=unanswered,
+            force_stop = True if message.text == "⛔ Testni to‘xtatish" else False
+        )
 
 
-    # Yangi ma'lumotlarni olish
-    data = await state.get_data()
+        # Yangi ma'lumotlarni olish
+        data = await state.get_data()
 
-    # Avvalgi pollni to'xtatish
-    if not "test_finished" in data:#  or data["force_stop"]:
-        try:
-            await bot.stop_poll(message.chat.id, data['poll_msg_id'])
-        except Exception as e:
-            print(f"Pollni to'xtatishda xato: {e}")
+        # Avvalgi pollni to'xtatish
+        if not "test_finished" in data:#  or data["force_stop"]:
+            try:
+                await bot.stop_poll(message.chat.id, data['poll_msg_id'])
+            except Exception as e:
+                print(f"Pollni to'xtatishda xato: {e}")
 
-    text = "✅ Test to'xtatildi! Siz bosh sahifaga qaytdingiz."
-    text += "\nIltimos, yuqoridagi test rasman tugaguncha kutib tursangiz." if data['force_stop'] else ""
-    # Natijani yuborish
-    await send_test_summary(
-        chat_id=message.chat.id,
-        msg_id=message.message_id,
-        data=data,
-        state=state
-    )
-    await start_command(message, text)
+        text = "✅ Test to'xtatildi! Siz bosh sahifaga qaytdingiz."
+        text += "\nIltimos, yuqoridagi test rasman tugaguncha kutib tursangiz." if data['force_stop'] else ""
+        # Natijani yuborish
+        await send_test_summary(
+            chat_id=message.chat.id,
+            data=data,
+            state=state
+        )
+        await start_command(message, text)
+    except Exception as e:
+        logger.exception(f"start_poll::stop_test da xatolik\n{e}")
 
 # ✅ Asosiy funksiya: Keyingi savolni yuborish
 async def send_next_poll(msg: Message, state: FSMContext):

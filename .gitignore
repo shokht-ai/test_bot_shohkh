@@ -4,5 +4,6 @@ __pycache__/
 .venv
 
 .idea
-get_postgres_url.sh
+*.sh
+*.log
 
