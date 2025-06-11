@@ -1,4 +1,4 @@
-import logging
+# import logging
 from typing import Any, Coroutine
 from itertools import islice
 from datetime import datetime
@@ -12,8 +12,8 @@ from database.users import get_user_by_id
 from app.handlers.base_handler import start_command
 from app.generate_pro_keys import generate_unique_id
 
-# Loggerni sozlash
-logger = logging.getLogger(__name__)
+# # Loggerni sozlash
+# logger = logging.getLogger(__name__)
 
 file_handler_router = Router()
 
@@ -39,7 +39,7 @@ def create_bank_buttons(banks, command_prefix: str):
 async def list_user_banks(message: Message):
     try:
         user_id = message.from_user.id
-        # logger.info(f"User {user_id} savollarni ko'rmoqchi.")z
+        # print(f"User {user_id} savollarni ko'rmoqchi.")z
         banks = await get_banks_by_user(user_id)
         poll_type = "test:" if message.text in ["🚀 Testni boshlash", "/test"] else "savollar:"
         inline_keyboard = create_bank_buttons(banks, poll_type)
@@ -54,14 +54,14 @@ async def list_user_banks(message: Message):
             reply_markup=inline_kb
         )
     except Exception as e:
-        logger.info(f"list_user_banks handlerda xatolik: {e}")
+        print(f"list_user_banks handlerda xatolik: {e}")
 
 @file_handler_router.message(F.text == "📚 Testlarim")
 @file_handler_router.message(Command("testlarim"))
 async def show_user_banks(message: Message):
     try:
         user_id = message.from_user.id
-        logger.info(f"User {user_id} testlar ro'yxatini so'radi.")
+        print(f"User {user_id} testlar ro'yxatini so'radi.")
         banks = await get_banks_by_user(user_id)
 
         if not banks:
@@ -87,25 +87,25 @@ async def show_user_banks(message: Message):
 
         await message.answer(response)
     except Exception as e:
-        logger.info(f"show_user_banks handlerda xatolik: {e}")
+        print(f"show_user_banks handlerda xatolik: {e}")
 
 @file_handler_router.message()
 async def no_commands(msg: Message):
     try:
-        # logger.info(f"Noaniq buyruq: {msg.text} | from user: {msg.from_user.id}")
+        # print(f"Noaniq buyruq: {msg.text} | from user: {msg.from_user.id}")
         await start_command(msg, text="🤔 Kechirasiz, bu buyruqni tushunmadim. Menyudan biror amalni tanlang.")
     except Exception as e:
-        logger.info(f"no_commands handlerda xatolik: {e}")
+        print(f"no_commands handlerda xatolik: {e}")
 
 @file_handler_router.message(Command("pro"))
 async def check_founder(msg: Message):
     try:
         user_type = await get_user_by_id(msg.from_user.id)
         if user_type[0]['usage_type'] != "founder":
-            # logger.info(f"User {msg.from_user.id} pro komandani ishlatdi, lekin founder emas.")
+            # print(f"User {msg.from_user.id} pro komandani ishlatdi, lekin founder emas.")
             await no_commands(msg)
         else:
-            # logger.info(f"Founder {msg.from_user.id} pro komandasini ishga tushirdi.")
+            # print(f"Founder {msg.from_user.id} pro komandasini ishga tushirdi.")
             await generate_unique_id(msg)
     except Exception as e:
-        logger.info(f"check_founder handlerda xatolik: {e}")
+        print(f"check_founder handlerda xatolik: {e}")

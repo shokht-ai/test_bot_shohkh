@@ -1,5 +1,5 @@
 import os
-import logging
+# import logging
 from datetime import datetime
 
 from aiogram.types import Message
@@ -9,7 +9,7 @@ from database.banks import update_title_and_created_time_by_bank_id, update_file
 from database.files import update_file_name, get_bank_id_by_file_id, get_file_path_by_file_id
 from database.questions import delete_questions_by_bank_id_bulk, insert_questions_bulk
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 async def sort_message(msg: Message, file_path):
     try:
@@ -42,4 +42,4 @@ async def sort_message(msg: Message, file_path):
         await start_command(msg, "✅ Fayl bazaga muvaffaqiyatli yangilandi.")
         # file_id borligni tekshirish yo'q bo'lsa fileni downloadsdan o'chirish.
     except Exception as e:
-        logger.info(f"update_file::sort_message da xatolik\n{e}")
+        print(f"update_file::sort_message da xatolik\n{e}")

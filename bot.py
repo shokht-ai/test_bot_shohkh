@@ -12,26 +12,26 @@ from database import initialize_database
 from core.bot_instance import bot as b
 from app import all_router
 
-# === Logging konfiguratsiyasi ===
-LOG_FILE = "bot.log"
-
-# Logger sozlash
-logger = logging.getLogger(__name__)
-logger.disabled = False
-logger.setLevel(logging.DEBUG)
-
-# Log formatini aniqlash
-log_format = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
-
-# # Faylga yozish uchun handler (lokal ishlatish uchun)
-# file_handler = logging.FileHandler(LOG_FILE, mode='w')
-# file_handler.setFormatter(log_format)
-# logger.addHandler(file_handler)
-
-# stdout’ga chiqarish uchun handler (Railway va terminal uchun)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(log_format)
-logger.addHandler(stream_handler)
+# # === Logging konfiguratsiyasi ===
+# LOG_FILE = "bot.log"
+#
+# # Logger sozlash
+# logger = logging.getLogger(__name__)
+# logger.disabled = False
+# logger.setLevel(logging.DEBUG)
+#
+# # Log formatini aniqlash
+# log_format = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(message)s")
+#
+# # # Faylga yozish uchun handler (lokal ishlatish uchun)
+# # file_handler = logging.FileHandler(LOG_FILE, mode='w')
+# # file_handler.setFormatter(log_format)
+# # logger.addHandler(file_handler)
+#
+# # stdout’ga chiqarish uchun handler (Railway va terminal uchun)
+# stream_handler = logging.StreamHandler()
+# stream_handler.setFormatter(log_format)
+# logger.addHandler(stream_handler)
 
 
 # === Muhit o‘zgaruvchilarini yuklash ===
@@ -56,7 +56,7 @@ commands = [
 # === Komandalarni o‘rnatish ===
 async def set_bot_commands(bot: Bot):
     await bot.set_my_commands(commands)
-    logger.info("Bot komandalar o‘rnatildi.")
+    print("Bot komandalar o‘rnatildi.")
 
 # === Webhook so‘rovlarni qabul qilish ===
 async def handle_webhook(request):
@@ -70,7 +70,7 @@ async def on_startup(bot: Bot, webhook_url: str):
         url=webhook_url,
         drop_pending_updates=True
     )
-    logger.info(f"✅ Webhook {webhook_url} ga o‘rnatildi...")
+    print(f"✅ Webhook {webhook_url} ga o‘rnatildi...")
 
 # === Asosiy funksiya ===
 async def cleanup(bot: Bot, runner_clean: web.AppRunner):
@@ -79,21 +79,21 @@ async def cleanup(bot: Bot, runner_clean: web.AppRunner):
         await bot.delete_webhook()
         await bot.session.close()
     except Exception as e:
-        logger.info(f"Error during cleanup: {e}")
+        print(f"Error during cleanup: {e}")
 
     try:
         await runner_clean.cleanup()
     except Exception as e:
-        logger.info(f"Error cleaning up runner: {e}")
+        print(f"Error cleaning up runner: {e}")
 
 
 async def main():
     global runner
     try:
-        logger.info("✅ Bot starting...")
+        print("✅ Bot starting...")
 
         await initialize_database()
-        logger.info("Database connected.")
+        print("Database connected.")
 
         # Webhook settings
         WEBHOOK_HOST = os.getenv("WEBHOOK_HOST", "YOUR_DOMAIN")
@@ -115,25 +115,25 @@ async def main():
         try:
             site = web.TCPSite(runner, WEBAPP_HOST, WEBAPP_PORT)
             await site.start()
-            logger.info(f"✅ Server running on {WEBAPP_HOST}:{WEBAPP_PORT}")
+            print(f"✅ Server running on {WEBAPP_HOST}:{WEBAPP_PORT}")
             await asyncio.Event().wait()
 
         except OSError as e:
             if e.errno == 98:  # Address already in use
-                logger.info(f"Port {WEBAPP_PORT} is already in use. Please choose another port.")
+                print(f"Port {WEBAPP_PORT} is already in use. Please choose another port.")
                 raise
             else:
-                logger.info(f"Server error: {e}")
+                print(f"Server error: {e}")
                 raise
 
     except asyncio.CancelledError:
-        logger.info("Bot shutting down...")
+        print("Bot shutting down...")
     except Exception as e:
-        logger.info(f"Unexpected error: {e}")
+        print(f"Unexpected error: {e}")
     finally:
-        logger.info("Cleaning up resources...")
+        print("Cleaning up resources...")
         await cleanup(b, runner)
-        logger.info("✅ Bot shut down successfully")
+        print("✅ Bot shut down successfully")
 
 
 if __name__ == "__main__":

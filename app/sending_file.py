@@ -9,9 +9,9 @@ load_dotenv()
 
 sending_file_router = Router()
 
-# Logger sozlash
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# # Logger sozlash
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
 @sending_file_router.callback_query(lambda c: c.data.startswith("savollar:"))
 async def send_bank_file(callback: CallbackQuery):
@@ -49,5 +49,5 @@ async def send_bank_file(callback: CallbackQuery):
             )
         )
     except Exception as e:
-        logger.info(f"sending_file::Xatolik yuz berdi\n{e}")
+        print(f"sending_file::Xatolik yuz berdi\n{e}")
         await callback.message.answer("⚠️ Ichki xatolik yuz berdi. Iltimos, keyinroq urinib ko‘ring.")
