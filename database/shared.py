@@ -8,7 +8,6 @@ load_dotenv()
 # Database connection from .env or URL
 def get_db_config():
     db_url = os.getenv("DATABASE_URL")
-    print("baza manzili:", db_url)
     if db_url:
         db_params = urlparse(db_url)
         return {

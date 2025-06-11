@@ -17,6 +17,7 @@ LOG_FILE = "bot.log"
 
 # Logger sozlash
 logger = logging.getLogger(__name__)
+logger.disabled = True
 logger.setLevel(logging.DEBUG)
 
 # Log formatini aniqlash
@@ -31,6 +32,7 @@ log_format = logging.Formatter("%(asctime)s - %(levelname)s - %(name)s - %(messa
 stream_handler = logging.StreamHandler()
 stream_handler.setFormatter(log_format)
 logger.addHandler(stream_handler)
+
 
 # === Muhit o‘zgaruvchilarini yuklash ===
 load_dotenv()
